@@ -5,4 +5,6 @@ struct CampaignRequest{
         uint value;
         address recipient;
         bool complete;
+        uint approvalCount;
+        mapping(address => bool) approvedBy;
     }
