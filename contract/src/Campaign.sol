@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import {CampaignRequest} from "./models/CampaignTypes.sol";
 
+
 contract Campaign{
 
     CampaignRequest[] public requests;
@@ -15,8 +16,8 @@ contract Campaign{
         require(msg.sender == manager);
         _;
     }
-    constructor(uint minContribution){
-        manager = msg.sender;
+    constructor(uint minContribution, address campaignManager){
+        manager = campaignManager;
         minimumContribution = minContribution;
     }
 
