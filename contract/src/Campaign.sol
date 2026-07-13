@@ -9,11 +9,11 @@ contract Campaign{
     CampaignRequest[] public requests;
     address public manager;
     uint public minimumContribution;
-    mapping(address => uint256) public approverContribution;
+    mapping(address => uint256) public donatorTotalContribution;
     mapping(address => bool) public donators;
 
     modifier restricted(){
-        require(msg.sender == manager);
+        require(msg.sender == manager, "Only manager can perform this action");
         _;
     }
     constructor(uint minContribution, address campaignManager){
@@ -22,9 +22,9 @@ contract Campaign{
     }
 
     function contribute() public payable{
-        require(msg.value > minimumContribution, "Donation is below minimum");
+        require(msg.value >= minimumContribution, "Donation is below minimum");
         
-        approverContribution[msg.sender] += msg.value;
+        donatorTotalContribution[msg.sender] += msg.value;
         donators[msg.sender] = true;
     }
     function createRequest(string memory description, uint value, address recipient) public restricted(){
@@ -44,5 +44,6 @@ contract Campaign{
         requests[index].approvedBy[msg.sender] = true;
         requests[index].approvalCount++;
     }
+
 
 }
