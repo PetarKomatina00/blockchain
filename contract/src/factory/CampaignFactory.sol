@@ -6,9 +6,11 @@ import {Campaign} from "../Campaign.sol";
 contract CampaignFactory{
     address[] public deployedCampaigns;
 
-    function createCampaign(uint minContribution) public{
+    function createCampaign(uint minContribution) public returns(address){
         Campaign newCampaign = new Campaign(minContribution, msg.sender);
         deployedCampaigns.push(address(newCampaign));
+
+        return address(newCampaign);
     }
 
     function getDeployedCampaigns() public view returns (address[] memory){
