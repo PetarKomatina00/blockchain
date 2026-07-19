@@ -69,6 +69,4 @@ contract Campaign{
 
         //Potreban event
     }
-
-
 }

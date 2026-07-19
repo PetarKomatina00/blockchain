@@ -39,6 +39,7 @@ pnpm-debug.log*
 .env.*
 !.env.example
 !.env.*.example
+contract/.env
 
 appsettings.Local.json
 appsettings.*.local.json
@@ -54,11 +55,6 @@ secrets.json
 keystore/
 wallets/
 
-
-# =========================================================
-# .NET / ASP.NET Core / Nethereum
-# =========================================================
-
 backend/**/bin/
 backend/**/obj/
 backend/**/TestResults/
@@ -70,34 +66,29 @@ backend/**/artifacts/
 *.nupkg
 *.snupkg
 
-# Lokalni NuGet cache, ako se nalazi unutar projekta
 packages/
 
 
-# =========================================================
-# Solidity / Foundry
-# =========================================================
+/contract/out/*
+/contract/cache/*
+/contract/broadcast/*
+/contract/lcov.info
+/contract/coverage/*
 
-contracts/out/
-contracts/cache/
-contracts/broadcast/
-contracts/lcov.info
-contracts/coverage/
 
-frontend/node_modules/
-frontend/dist/
-frontend/.vite/
+frontend/crowdfunding-web/node_modules/
+frontend/crowdfunding-web/dist/
+frontend/crowdfunding-web/.vite/
+frontend/crowdfunding-web/coverage/
 
-# Create React App
-frontend/build/
-frontend/out/
+frontend/crowdfunding-web/.cache/
+frontend/crowdfunding-web/.eslintcache
+frontend/crowdfunding-web/*.tsbuildinfo
 
-frontend/coverage/
-
-frontend/.cache/
-frontend/.parcel-cache/
-frontend/.eslintcache
-
+frontend/crowdfunding-web/.env
+frontend/crowdfunding-web/.env.*
+!frontend/crowdfunding-web/.env.example
+!frontend/crowdfunding-web/.env.*.example
 *.tsbuildinfo
 
 deployments/local/
