@@ -28,3 +28,80 @@ a {
 button:active {
   transform: scale(0.98);
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+.navbar-brand {
+  letter-spacing: -0.03em;
+}
+
+.brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: white;
+  background: #0d6efd;
+  border-radius: 0.75rem;
+}
+
+.nav-link {
+  font-weight: 500;
+}
+
+.hero-section {
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(13, 110, 253, 0.15),
+      transparent 30%
+    ),
+    linear-gradient(180deg, #f8faff 0%, #ffffff 100%);
+}
+
+.min-vh-75 {
+  min-height: 75vh;
+}
+
+.hero-description {
+  max-width: 42rem;
+}
+
+.hero-card {
+  transform: rotate(1deg);
+}
+
+.campaign-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 12rem;
+  background:
+    linear-gradient(
+      135deg,
+      #eef3ff,
+      #f8f9fa
+    );
+}
+
+.progress {
+  height: 0.65rem;
+  border-radius: 999px;
+}
+
+.progress-bar {
+  border-radius: 999px;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    padding-top: 1rem;
+  }
+
+  .hero-card {
+    transform: none;
+  }
+}

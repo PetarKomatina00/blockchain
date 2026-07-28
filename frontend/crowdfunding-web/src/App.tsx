@@ -1,41 +1,34 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { Navbar } from "./components/layout/Navbar";
 
 function App() {
   return (
-    <main className="min-vh-100 bg-light">
-      <div className="container py-5">
-        <div className="p-5 bg-white border rounded-4 shadow-sm">
-          <span className="badge text-bg-primary mb-3">
-            Decentralized crowdfunding
-          </span>
+    <>
+      <Navbar />
 
-          <h1 className="display-5 fw-bold">
-            Fund projects that matter
-          </h1>
+      <main>
+        <section className="hero-section">
+          <div className="container py-5">
+            <h1 className="display-4 fm-bold mb-4">Podrži ideje koje mogu da naprave razliku</h1>
+            <p className="lead text-secondary mb-4">
+              Kreiraj kampanju, doniraj ETH i glasaj o načinu na koji
+              menadžeri koriste prikupljena sredstva.
+            </p>
 
-          <p className="lead text-secondary">
-            Create campaigns, contribute ETH and approve spending requests
-            through Ethereum smart contracts.
-          </p>
-
-          <div className="d-flex flex-wrap gap-2">
-            <button type="button" className="btn btn-primary btn-lg">
-              <i className="bi bi-compass me-2" />
-              Explore campaigns
-            </button>
-
-            <button type="button" className="btn btn-outline-dark btn-lg">
-              <i className="bi bi-wallet2 me-2" />
-              Connect wallet
+            <button type="button" className="btn btn-outline-dark btn-lg px-4">
+              <i className="bi bi-plus-circle me-2" />
+              Pokreni kampanju
             </button>
           </div>
-        </div>
-      </div>
-    </main>
+        </section>
+
+        <section className="bg-light container py-5">
+          <div className="container py-5">
+            <span className="text-primary">Aktivne kampanje</span>
+            <h2 className="display-6 mt-2 mb-0">Istraži projekte</h2>
+          </div>
+        </section>
+      </main>
+    </>
   );
 }
 
