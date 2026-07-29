@@ -1,3 +1,5 @@
+import { WalletButton } from "../WallterButton";
+
 export function Navbar() {
   return (
     <nav
@@ -48,10 +50,7 @@ export function Navbar() {
               Kreiraj kampanju
             </button>
 
-            <button type="button" className="btn btn-primary" >
-              <i className="bi bi-wallet2 me-2" aria-hidden="true"/>
-              Poveži wallet
-            </button>
+            <WalletButton />
           </div>
         </div>
       </div>
