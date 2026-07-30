@@ -1,4 +1,4 @@
-import { WalletButton } from "../WallterButton";
+import { WalletButton } from "../WalletButton";
 
 export function Navbar() {
   return (

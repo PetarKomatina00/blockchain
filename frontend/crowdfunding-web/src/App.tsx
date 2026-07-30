@@ -1,3 +1,4 @@
+import { CampaignList } from "./components/CampaignList";
 import { Navbar } from "./components/layout/Navbar";
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           <div className="container py-5">
             <span className="text-primary">Aktivne kampanje</span>
             <h2 className="display-6 mt-2 mb-0">Istraži projekte</h2>
+            <CampaignList />
           </div>
         </section>
       </main>

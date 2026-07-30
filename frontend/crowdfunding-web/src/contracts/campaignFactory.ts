@@ -1,4 +1,4 @@
-import { isAddress, type Address } from "viem";
+import { isAddress, type Abi, type Address } from "viem";
 
 import campaignFactoryAbiJson from "./CampaignFactory.json"
 
@@ -13,4 +13,4 @@ if (!factoryAddress || !isAddress(factoryAddress)) {
 export const campaignFactoryAddress =
   factoryAddress as Address;
 
-export const campaignFactoryAbi = campaignFactoryAbiJson;
+export const campaignFactoryAbi = campaignFactoryAbiJson.abi as Abi;
