@@ -2,7 +2,7 @@ import type { Address } from "viem";
 import { useReadContract } from "wagmi";
 
 import {campaignFactoryAbi,campaignFactoryAddress} from "../contracts/campaignFactory";
-import { anvilChain } from "../web3/config";
+import { sepolia } from "viem/chains";
 
 function shortenAddress(address: Address): string {
   return `${address.slice(0, 8)}...${address.slice(-6)}`;
@@ -13,7 +13,7 @@ export function CampaignList() {
       address: campaignFactoryAddress,
       abi: campaignFactoryAbi,
       functionName: "getDeployedCampaigns",
-      chainId: anvilChain.id,
+      chainId: sepolia.id,
   });
 
   if (campaignsQuery.isPending) {

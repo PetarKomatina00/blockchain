@@ -2,16 +2,15 @@ import { Route, Routes } from "react-router";
 
 import { CreateCampaignPage } from "./pages/CreateCampaignPage";
 import { HomePage } from "./pages/HomePage";
+import { DonatePage } from "./pages/DonatePage";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
 
-      <Route
-        path="/campaigns/new"
-        element={<CreateCampaignPage />}
-      />
+      <Route path="/campaigns/new" element={<CreateCampaignPage />}/>
+      <Route path="/campaigns/:address" element={<DonatePage />}/>
 
       <Route
         path="*"
