@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import { WalletButton } from "../WalletButton";
 
 export function Navbar() {
@@ -45,10 +46,10 @@ export function Navbar() {
           </ul>
 
           <div className="d-flex flex-column flex-lg-row gap-2">
-            <button type="button" className="btn btn-outline-dark">
-              <i className="bi bi-plus-lg me-2" aria-hidden="true"/>
+            <Link to="/campaigns/new" className="btn btn-outline-dark">
+            <i className="bi bi-plus-lg me-2" />
               Kreiraj kampanju
-            </button>
+            </Link>
 
             <WalletButton />
           </div>

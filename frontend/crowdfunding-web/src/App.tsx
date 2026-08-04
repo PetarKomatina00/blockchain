@@ -1,36 +1,33 @@
-import { CampaignList } from "./components/CampaignList";
-import { Navbar } from "./components/layout/Navbar";
+import { Route, Routes } from "react-router";
+
+import { CreateCampaignPage } from "./pages/CreateCampaignPage";
+import { HomePage } from "./pages/HomePage";
 
 function App() {
   return (
-    <>
-      <Navbar />
+    <Routes>
+      <Route path="/" element={<HomePage />} />
 
-      <main>
-        <section className="hero-section">
-          <div className="container py-5">
-            <h1 className="display-4 fm-bold mb-4">Podrži ideje koje mogu da naprave razliku</h1>
-            <p className="lead text-secondary mb-4">
-              Kreiraj kampanju, doniraj ETH i glasaj o načinu na koji
-              menadžeri koriste prikupljena sredstva.
-            </p>
+      <Route
+        path="/campaigns/new"
+        element={<CreateCampaignPage />}
+      />
 
-            <button type="button" className="btn btn-outline-dark btn-lg px-4">
-              <i className="bi bi-plus-circle me-2" />
-              Pokreni kampanju
-            </button>
-          </div>
-        </section>
+      <Route
+        path="*"
+        element={
+          <main className="container py-5 text-center">
+            <h1 className="display-5 fw-bold">
+              Page not found 404
+            </h1>
 
-        <section className="bg-light container py-5">
-          <div className="container py-5">
-            <span className="text-primary">Aktivne kampanje</span>
-            <h2 className="display-6 mt-2 mb-0">Istraži projekte</h2>
-            <CampaignList />
-          </div>
-        </section>
-      </main>
-    </>
+            <a href="/" className="btn btn-primary mt-3">
+              HomePage
+            </a>
+          </main>
+        }
+      />
+    </Routes>
   );
 }
 
