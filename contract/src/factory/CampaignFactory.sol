@@ -6,9 +6,9 @@ import {Campaign} from "../Campaign.sol";
 contract CampaignFactory{
     address[] public deployedCampaigns;
 
-    function createCampaign(uint minContribution) public returns(address){
+    function createCampaign(uint minContribution, uint256 fundingGoal) public returns(address){
         require(minContribution > 0, "Minimum contribution must be greater than zero");
-        Campaign newCampaign = new Campaign(minContribution, msg.sender);
+        Campaign newCampaign = new Campaign(minContribution, fundingGoal, msg.sender);
         deployedCampaigns.push(address(newCampaign));
 
         return address(newCampaign);

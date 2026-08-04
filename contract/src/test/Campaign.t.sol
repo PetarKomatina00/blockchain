@@ -15,6 +15,7 @@ contract CampaignTest is Test{
     address private recipient;
 
     uint256 private constant MINIMUM_CONTRIBUTION = 0.001 ether;
+    uint256 private constant FUNDING_GOAL = 0.003 ether;
     uint256 private constant VALID_CONTRIBUTION = MINIMUM_CONTRIBUTION + 1 wei;
     string private constant DUMMY_DESCRIPTION = "Concreting the surface";
     
@@ -29,7 +30,7 @@ contract CampaignTest is Test{
         nonDonor = makeAddr("nonDonor");
         recipient = makeAddr("recipient");
 
-        campaign = new Campaign(MINIMUM_CONTRIBUTION, manager);
+        campaign = new Campaign(MINIMUM_CONTRIBUTION, FUNDING_GOAL, manager);
 
         //Sets balance to specific user
         vm.deal(donorOne, 10 ether); 

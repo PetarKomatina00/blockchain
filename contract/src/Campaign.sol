@@ -9,6 +9,7 @@ contract Campaign{
     CampaignRequest[] public requests;
     address public manager;
     uint public minimumContribution;
+    uint256 public fundingGoal;
     mapping(address => uint256) public donatorTotalContribution;
     mapping(address => bool) public donators;
     uint256 public donatorsCount;
@@ -17,9 +18,10 @@ contract Campaign{
         require(msg.sender == manager, "Only manager can perform this action");
         _;
     }
-    constructor(uint minContribution, address campaignManager){
+    constructor(uint minContribution, uint256 goal, address campaignManager){
         manager = campaignManager;
         minimumContribution = minContribution;
+        fundingGoal = goal;
     }
 
     function contribute() public payable{

@@ -12,6 +12,7 @@ contract CampaignFactoryTest is Test {
     address private creatorTwo;
 
     uint256 private constant MINIMUM_CONTRIBUTION = 0.001 ether;
+    uint256 private constant FUNDING_GOAL = 0.003 ether;
 
     function setUp() public {
         creatorOne = makeAddr("creatorOne");
@@ -26,14 +27,14 @@ contract CampaignFactoryTest is Test {
     function test_UserCanCreateCampaign() public {
         vm.prank(creatorOne);
 
-        address campaignAddress = factory.createCampaign(MINIMUM_CONTRIBUTION);
+        address campaignAddress = factory.createCampaign(MINIMUM_CONTRIBUTION, FUNDING_GOAL);
 
         assertNotEq(campaignAddress, address(0));
     }
     function test_CampaignCreatorBecomesManager() public {
         vm.prank(creatorOne);
 
-        address campaignAddress = factory.createCampaign(MINIMUM_CONTRIBUTION);
+        address campaignAddress = factory.createCampaign(MINIMUM_CONTRIBUTION, FUNDING_GOAL);
 
         Campaign createdCampaign = Campaign(campaignAddress);
 
@@ -43,7 +44,7 @@ contract CampaignFactoryTest is Test {
     {
         vm.prank(creatorOne);
 
-        address campaignAddress =factory.createCampaign(MINIMUM_CONTRIBUTION);
+        address campaignAddress =factory.createCampaign(MINIMUM_CONTRIBUTION, FUNDING_GOAL);
 
         Campaign createdCampaign = Campaign(campaignAddress);
 
@@ -53,7 +54,7 @@ contract CampaignFactoryTest is Test {
     {
         vm.prank(creatorOne);
 
-        address campaignAddress = factory.createCampaign(MINIMUM_CONTRIBUTION);
+        address campaignAddress = factory.createCampaign(MINIMUM_CONTRIBUTION, FUNDING_GOAL);
 
         assertEq(factory.deployedCampaigns(0),campaignAddress);
 
@@ -62,11 +63,11 @@ contract CampaignFactoryTest is Test {
     function test_MultipleUsersCanCreateCampaigns() public {
         vm.prank(creatorOne);
 
-        address firstCampaignAddress = factory.createCampaign(0.001 ether);
+        address firstCampaignAddress = factory.createCampaign(0.001 ether, FUNDING_GOAL);
 
         vm.prank(creatorTwo);
 
-        address secondCampaignAddress = factory.createCampaign(0.01 ether);
+        address secondCampaignAddress = factory.createCampaign(0.01 ether, FUNDING_GOAL);
 
         assertNotEq(firstCampaignAddress,secondCampaignAddress);
 
@@ -79,11 +80,11 @@ contract CampaignFactoryTest is Test {
     function test_CampaignsHaveDifferentManagers() public {
         vm.prank(creatorOne);
 
-        address firstCampaignAddress = factory.createCampaign(0.001 ether);
+        address firstCampaignAddress = factory.createCampaign(0.001 ether, FUNDING_GOAL);
 
         vm.prank(creatorTwo);
 
-        address secondCampaignAddress = factory.createCampaign(0.01 ether);
+        address secondCampaignAddress = factory.createCampaign(0.01 ether, FUNDING_GOAL);
 
         Campaign firstCampaign = Campaign(firstCampaignAddress);
 
@@ -100,10 +101,10 @@ contract CampaignFactoryTest is Test {
         uint256 secondMinimum = 0.05 ether;
 
         vm.prank(creatorOne);
-        address firstCampaignAddress = factory.createCampaign(firstMinimum);
+        address firstCampaignAddress = factory.createCampaign(firstMinimum, FUNDING_GOAL);
 
         vm.prank(creatorTwo);
-        address secondCampaignAddress = factory.createCampaign(secondMinimum);
+        address secondCampaignAddress = factory.createCampaign(secondMinimum, FUNDING_GOAL);
 
         Campaign firstCampaign = Campaign(firstCampaignAddress);
 
@@ -116,7 +117,7 @@ contract CampaignFactoryTest is Test {
     function test_DonorCanContributeToFactoryCreatedCampaign() public{
         vm.prank(creatorOne);
 
-        address campaignAddress =factory.createCampaign(MINIMUM_CONTRIBUTION);
+        address campaignAddress = factory.createCampaign(MINIMUM_CONTRIBUTION, FUNDING_GOAL);
 
         Campaign createdCampaign = Campaign(campaignAddress);
 
