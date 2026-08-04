@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router";
 import { CreateCampaignPage } from "./pages/CreateCampaignPage";
 import { HomePage } from "./pages/HomePage";
 import { DonatePage } from "./pages/DonatePage";
+import { CampaignDetails } from "./pages/CampaignDetails";
 
 function App() {
   return (
@@ -11,7 +12,7 @@ function App() {
 
       <Route path="/campaigns/new" element={<CreateCampaignPage />}/>
       <Route path="/campaigns/:address" element={<DonatePage />}/>
-
+      <Route path="/campaigns/:address" element={<CampaignDetails />}/>
       <Route
         path="*"
         element={

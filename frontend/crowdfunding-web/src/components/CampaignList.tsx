@@ -1,6 +1,6 @@
 import type { Address } from "viem";
 import { useReadContract } from "wagmi";
-
+import { Link } from "react-router";
 import {campaignFactoryAbi,campaignFactoryAddress} from "../contracts/campaignFactory";
 import { sepolia } from "viem/chains";
 
@@ -87,12 +87,11 @@ export function CampaignList() {
                 {shortenAddress(address)}
               </p>
 
-              <button
-                type="button"
-                className="btn btn-outline-primary w-100"
-              >
+              <Link
+                to={`/campaigns/${address}`}
+                className="btn btn-outline-primary w-100">
                 View Campaign
-              </button>
+              </Link>
             </div>
           </article>
         </div>
