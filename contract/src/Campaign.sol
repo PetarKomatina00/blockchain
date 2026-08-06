@@ -13,6 +13,7 @@ contract Campaign{
     mapping(address => uint256) public donatorTotalContribution;
     mapping(address => bool) public donators;
     uint256 public donatorsCount;
+    bool public completed;
 
     modifier restricted(){
         require(msg.sender == manager, "Only manager can perform this action");
@@ -25,6 +26,7 @@ contract Campaign{
     }
 
     function contribute() public payable{
+        require(!completed, "Campaign is completed");
         require(msg.value >= minimumContribution, "Donation is below minimum");
         
         if(!donators[msg.sender]){
@@ -33,7 +35,7 @@ contract Campaign{
         }
         donatorTotalContribution[msg.sender] += msg.value;
     }
-    function createRequest(string memory description, uint value, address recipient) public restricted(){
+    function createRequest(string memory description, uint value, address recipient) public restricted{
         require(bytes(description).length > 0, "Description is required");
         require(value > 0, "Value must be greater than zero");
         require(recipient != address(0), "Invalid recipient");
@@ -53,7 +55,7 @@ contract Campaign{
         requests[index].approvedBy[msg.sender] = true;
         requests[index].approvalCount++;
     }
-    function finalizeRequest(uint index) public{
+    function finalizeRequest(uint index) public restricted{
         require(index < requests.length, "Request does not exist");
 
         CampaignRequest storage request = requests[index];
@@ -70,5 +72,9 @@ contract Campaign{
         require(sucesses, "Transfer failed");
 
         //Potreban event
+    }
+    function completeCampaign() public restricted {
+        require(address(this).balance == 0, "Campaign still has funds");
+        completed = true;
     }
 }
