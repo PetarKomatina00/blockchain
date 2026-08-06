@@ -16,6 +16,7 @@ import { sepolia } from "viem/chains";
 
 import { Navbar } from "../components/layout/Navbar";
 import { campaignAbi } from "../contracts/Campaign";
+import { CampaignRequests } from "./CampaignRequest";
 
 export function CampaignDetails() {
   const { address } = useParams();
@@ -25,18 +26,32 @@ export function CampaignDetails() {
   const [localError, setLocalError] = useState("");
 
   const connection = useConnection();
-  const transaction = useWriteContract();
+
+  const donationTransaction = useWriteContract();
+
+  const donationReceipt = useWaitForTransactionReceipt({
+    hash: donationTransaction.data,
+    chainId: sepolia.id,
+  });
+
+  const completeTransaction = useWriteContract();
+
+  const completeReceipt = useWaitForTransactionReceipt({
+    hash: completeTransaction.data,
+    chainId: sepolia.id,
+  });
+
+  const manager = useReadContract({
+    address: campaignAddress,
+    abi: campaignAbi,
+    functionName: "manager",
+    chainId: sepolia.id,
+  });
 
   const fundingGoal = useReadContract({
     address: campaignAddress,
     abi: campaignAbi,
     functionName: "fundingGoal",
-    chainId: sepolia.id
-  });
-  const manager = useReadContract({
-    address: campaignAddress,
-    abi: campaignAbi,
-    functionName: "manager",
     chainId: sepolia.id,
   });
 
@@ -47,35 +62,68 @@ export function CampaignDetails() {
     chainId: sepolia.id,
   });
 
+  const completed = useReadContract({
+    address: campaignAddress,
+    abi: campaignAbi,
+    functionName: "completed",
+    chainId: sepolia.id,
+  });
+
   const balance = useBalance({
     address: campaignAddress,
     chainId: sepolia.id,
   });
 
-  const receipt = useWaitForTransactionReceipt({
-    hash: transaction.data,
-    chainId: sepolia.id,
-  });
+  const managerAddress = manager.data as Address | undefined;
+  const isCompleted = completed.data === true;
+
+  const isManager =
+    connection.isConnected &&
+    connection.address !== undefined &&
+    managerAddress !== undefined &&
+    connection.address.toLowerCase() ===
+      managerAddress.toLowerCase();
+
+  const campaignBalance = balance.data?.value;
+
+  const canComplete =
+    isManager &&
+    campaignBalance === 0n &&
+    !isCompleted;
+
+  const isCompleting =
+    completeTransaction.isPending ||
+    (Boolean(completeTransaction.data) &&
+      completeReceipt.isPending);
 
   useEffect(() => {
-    if (receipt.isSuccess) {
+    if (donationReceipt.isSuccess) {
       setAmount("");
       void balance.refetch();
     }
-  }, [receipt.isSuccess]);
+  }, [donationReceipt.isSuccess]);
+
+  useEffect(() => {
+    if (completeReceipt.isSuccess) {
+      void completed.refetch();
+      void balance.refetch();
+    }
+  }, [completeReceipt.isSuccess]);
 
   function donate() {
     setLocalError("");
 
-    const normalizedAmount = amount.trim().replace(",", ".");
+    const normalizedAmount = amount
+      .trim()
+      .replace(",", ".");
 
     if (!normalizedAmount) {
-      setLocalError("Unesi iznos donacije.");
+      setLocalError("Enter a donation amount.");
       return;
     }
 
     try {
-      transaction.mutate({
+      donationTransaction.mutate({
         address: campaignAddress,
         abi: campaignAbi,
         functionName: "contribute",
@@ -83,8 +131,17 @@ export function CampaignDetails() {
         chainId: sepolia.id,
       });
     } catch {
-      setLocalError("Iznos nije validan.");
+      setLocalError("Invalid donation amount.");
     }
+  }
+
+  function completeCampaign() {
+    completeTransaction.mutate({
+      address: campaignAddress,
+      abi: campaignAbi,
+      functionName: "completeCampaign",
+      chainId: sepolia.id,
+    });
   }
 
   return (
@@ -93,7 +150,7 @@ export function CampaignDetails() {
 
       <main className="container py-5">
         <Link to="/" className="text-decoration-none">
-          ← Home Page
+          ← Home
         </Link>
 
         <div className="card shadow-sm mt-4">
@@ -108,63 +165,146 @@ export function CampaignDetails() {
               <strong>Manager:</strong>{" "}
               {String(manager.data ?? "...")}
             </p>
+
             <p>
-              <strong>Funding Goal</strong>{" "}
-              {fundingGoal.data !== undefined
-                ? `${formatEther(fundingGoal.data as bigint)} ETH`
-                : "Učitavanje..."}
+              <strong>Status:</strong>{" "}
+              <span
+                className={`badge ${
+                  isCompleted
+                    ? "bg-secondary"
+                    : "bg-success"
+                }`}
+              >
+                {isCompleted
+                  ? "Completed"
+                  : "Active"}
+              </span>
             </p>
+
             <p>
-              <strong>Minimum contribution</strong>{" "}
+              <strong>Funding goal:</strong>{" "}
+              {fundingGoal.data !== undefined
+                ? `${formatEther(
+                    fundingGoal.data as bigint,
+                  )} ETH`
+                : "Loading..."}
+            </p>
+
+            <p>
+              <strong>Minimum contribution:</strong>{" "}
               {minimumContribution.data !== undefined
-                ? formatEther(minimumContribution.data as bigint)
-                : "..."}{" "}
+                ? formatEther(
+                    minimumContribution.data as bigint,
+                  )
+                : "Loading..."}{" "}
               ETH
             </p>
 
             <p>
-              <strong>Balans:</strong>{" "}
+              <strong>Balance:</strong>{" "}
               {balance.data
                 ? formatEther(balance.data.value)
-                : "..."}{" "}
+                : "Loading..."}{" "}
               ETH
             </p>
 
             {!connection.isConnected && (
               <div className="alert alert-warning">
-                MetaMask nije povezan.
+                MetaMask is not connected.
               </div>
             )}
 
-            <div className="input-group">
-              <input
-                type="text"
-                inputMode="decimal"
-                className="form-control"
-                placeholder="Na primer 0.001"
-                value={amount}
-                onChange={(event) => setAmount(event.target.value)}
-              />
+            {!isCompleted && (
+              <div className="input-group">
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  className="form-control"
+                  placeholder="For example 0.001"
+                  value={amount}
+                  onChange={(event) =>
+                    setAmount(event.target.value)
+                  }
+                />
 
-              <span className="input-group-text">ETH</span>
+                <span className="input-group-text">
+                  ETH
+                </span>
 
-              <button
-                type="button"
-                className="btn btn-success"
-                onClick={donate}
-              >
-                Doniraj
-              </button>
-            </div>
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  onClick={donate}
+                >
+                  Donate
+                </button>
+              </div>
+            )}
 
-            {transaction.isPending && (
+            {isCompleted && (
+              <div className="alert alert-secondary">
+                This campaign is completed. New donations
+                are not allowed.
+              </div>
+            )}
+
+            <CampaignRequests
+              campaignAddress={campaignAddress}
+              onChanged={() => {
+                void balance.refetch();
+              }}
+            />
+
+            <hr className="my-4" />
+
+            <h2 className="h5">
+              Complete campaign
+            </h2>
+
+            {!isManager && connection.isConnected && (
+              <p className="text-muted">
+                Only the campaign manager can complete the
+                campaign.
+              </p>
+            )}
+
+            {isManager &&
+              campaignBalance !== undefined &&
+              campaignBalance > 0n && (
+                <p className="text-muted">
+                  Withdraw all campaign funds before
+                  completing the campaign.
+                </p>
+              )}
+
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={completeCampaign}
+              disabled={!canComplete || isCompleting}
+            >
+              {isCompleting
+                ? "Confirming..."
+                : isCompleted
+                  ? "Campaign completed"
+                  : "Complete campaign"}
+            </button>
+
+            {donationTransaction.isPending && (
               <div className="alert alert-info mt-3">
-                Potvrdi transakciju u MetaMasku.
+                Confirm the donation in MetaMask.
               </div>
             )}
-            {receipt.isSuccess && (
+
+            {donationReceipt.isSuccess && (
               <div className="alert alert-success mt-3">
-                Donacija je uspešna.
+                Donation completed successfully.
+              </div>
+            )}
+
+            {completeReceipt.isSuccess && (
+              <div className="alert alert-success mt-3">
+                Campaign completed successfully.
               </div>
             )}
 
@@ -174,10 +314,19 @@ export function CampaignDetails() {
               </div>
             )}
 
-            {(transaction.error || receipt.error) && (
+            {(donationTransaction.error ||
+              donationReceipt.error) && (
               <div className="alert alert-danger mt-3">
-                {transaction.error?.message ??
-                  receipt.error?.message}
+                {donationTransaction.error?.message ??
+                  donationReceipt.error?.message}
+              </div>
+            )}
+
+            {(completeTransaction.error ||
+              completeReceipt.error) && (
+              <div className="alert alert-danger mt-3">
+                {completeTransaction.error?.message ??
+                  completeReceipt.error?.message}
               </div>
             )}
           </div>

@@ -9,6 +9,13 @@ function shortenAddress(address: Address): string {
 }
 
 export function CampaignList() {
+
+  const completed = useReadContract({
+  address: campaignFactoryAddress,
+    abi: campaignFactoryAbi,
+    functionName: "completed",
+    chainId: sepolia.id,
+  });
   const campaignsQuery = useReadContract({
       address: campaignFactoryAddress,
       abi: campaignFactoryAbi,
@@ -75,8 +82,12 @@ export function CampaignList() {
         >
           <article className="card h-100 border-0 shadow-sm">
             <div className="card-body p-4">
-              <span className="badge text-bg-success mb-3">
-                Active
+              <span
+                className={`badge ${
+                  completed.data ? "bg-secondary" : "bg-success"
+                }`}
+              >
+                {completed.data ? "Completed" : "Active"}
               </span>
 
               <h3 className="h5">
