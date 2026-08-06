@@ -27,6 +27,12 @@ export function CampaignDetails() {
   const connection = useConnection();
   const transaction = useWriteContract();
 
+  const fundingGoal = useReadContract({
+    address: campaignAddress,
+    abi: campaignAbi,
+    functionName: "fundingGoal",
+    chainId: sepolia.id
+  });
   const manager = useReadContract({
     address: campaignAddress,
     abi: campaignAbi,
@@ -102,7 +108,12 @@ export function CampaignDetails() {
               <strong>Manager:</strong>{" "}
               {String(manager.data ?? "...")}
             </p>
-
+            <p>
+              <strong>Funding Goal</strong>{" "}
+              {fundingGoal.data !== undefined
+                ? `${formatEther(fundingGoal.data as bigint)} ETH`
+                : "Učitavanje..."}
+            </p>
             <p>
               <strong>Minimum contribution</strong>{" "}
               {minimumContribution.data !== undefined

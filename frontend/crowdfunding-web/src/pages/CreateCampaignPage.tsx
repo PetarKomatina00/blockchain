@@ -1,27 +1,38 @@
-import { useState, type SyntheticEvent } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
 import { parseEther } from "viem";
-import {useConnection,useWaitForTransactionReceipt,useWriteContract,} from "wagmi";
+import {
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
+import { sepolia } from "viem/chains";
+
 import { Navbar } from "../components/layout/Navbar";
-import {campaignFactoryAbi,campaignFactoryAddress,} from "../contracts/campaignFactory";
+import {campaignFactoryAbi, campaignFactoryAddress} from "../contracts/campaignFactory";
 
 export function CreateCampaignPage() {
-  const [amount, setAmount] = useState("");
-  const connection = useConnection();
+  const [minimumContribution, setMinimumContribution] =
+    useState("");
+
+  const [fundingGoal, setFundingGoal] = useState("");
+
   const transaction = useWriteContract();
 
   const receipt = useWaitForTransactionReceipt({
     hash: transaction.data,
+    chainId: sepolia.id,
   });
 
-  function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
-    event.preventDefault();
-
+  function createCampaign() {
     transaction.mutate({
       address: campaignFactoryAddress,
       abi: campaignFactoryAbi,
       functionName: "createCampaign",
-      args: [parseEther(amount)],
+      args: [
+        parseEther(minimumContribution),
+        parseEther(fundingGoal),
+      ],
+      chainId: sepolia.id,
     });
   }
 
@@ -31,48 +42,81 @@ export function CreateCampaignPage() {
 
       <main className="container py-5">
         <Link to="/" className="text-decoration-none">
-          Go to Home Page
+          ← Home Page
         </Link>
 
-        <div className="card shadow-sm border-0 mx-auto mt-4 p-4">
-          <h1 className="h3 mb-4">Create Campaign</h1>
+        <div className="card shadow-sm mt-4">
+          <div className="card-body p-4">
+            <h1 className="h3 mb-4">
+              Create Campaign
+            </h1>
 
-          {!connection.isConnected && (
-            <div className="alert alert-warning">
-              Connect to MetaMask
+            <div className="mb-3">
+              <label className="form-label">
+                Minimum contribution
+              </label>
+
+              <div className="input-group">
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  className="form-control"
+                  placeholder="0.001"
+                  value={minimumContribution}
+                  onChange={(event) =>
+                    setMinimumContribution(
+                      event.target.value,
+                    )
+                  }
+                />
+
+                <span className="input-group-text">
+                  ETH
+                </span>
+              </div>
             </div>
-          )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="input-group mb-3">
-              <input
-                type="number"
-                step="any"
-                min="0"
-                className="form-control"
-                placeholder="Minimalni doprinos"
-                value={amount}
-                onChange={(event) => setAmount(event.target.value)}
-                required
-              />
+            <div className="mb-3">
+              <label className="form-label">
+                Funding Goal
+              </label>
 
-              <span className="input-group-text">ETH</span>
+              <div className="input-group">
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  className="form-control"
+                  placeholder="1"
+                  value={fundingGoal}
+                  onChange={(event) =>
+                    setFundingGoal(event.target.value)
+                  }
+                />
+
+                <span className="input-group-text">
+                  ETH
+                </span>
+              </div>
             </div>
 
             <button
-              className="btn btn-primary w-100"
-              disabled={!connection.isConnected || transaction.isPending}>
+              type="button"
+              className="btn btn-primary"
+              onClick={createCampaign}
+              disabled={transaction.isPending}
+            >
               {transaction.isPending
-                ? "Confirm in Meta Mask"
+                ? "Confirm in metamask..."
                 : "Create Campaign"}
             </button>
-          </form>
 
-          {receipt.isSuccess && (
-            <div className="alert alert-success mt-3">
-              Campaign has been created.
-            </div>
-          )}
+            {(transaction.error || receipt.error) && (
+              <div className="alert alert-danger mt-3">
+                {transaction.error?.message ??
+                  receipt.error?.message}
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </>
